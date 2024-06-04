@@ -194,7 +194,6 @@ print(grafico_mediana_años)
 # Agrupar por año de creación y calcular la mediana de los años que una empresa se mantiene abierta
 estadisticas_empresas <- dc_1 %>%
   group_by(ano) %>%
-  filter(UB != 2023) %>%
   summarize(mediana_años_abierta = median(años_abierta, na.rm = TRUE),
             promedio_años_abierta = mean(años_abierta, na.rm = TRUE),
             sd_años_abierta = sd(años_abierta, na.rm = TRUE),
@@ -288,7 +287,17 @@ grafico_empresas_cerradas <- ggplot(empresas_cerradas, aes(x = UB, y = cantidad,
 # Mostrar el gráfico
 print(grafico_empresas_cerradas)
 
+#############################################
 
+#Histograma de la distribución de tiempo que se mantienen abiertas las empresas
 
+histograma_empresas <- ggplot(dc_1, aes(x = años_abierta)) +
+  geom_histogram(binwidth = 1, fill = "steelblue", color = "black", alpha = 0.7) +
+  labs(title = "Distribución del Tiempo que las Empresas se Mantienen Abiertas",
+       x = "Años que las Empresas se Mantienen Abiertas",
+       y = "Número de Empresas") +
+  theme_minimal()
+
+print(histograma_empresas)
 
 
