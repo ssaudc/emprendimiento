@@ -171,3 +171,124 @@ promedio_años_abierta <- dc_1 %>%
 #Visualizar los años que estuvo abierta cada empresa
 print(dc_1 %>% select(RUC, ano, UB, años_abierta))
 
+
+# Calcular la mediana de años que una empresa se mantiene abierta por año de creación
+mediana_años_por_ano <- dc_1 %>%
+  group_by(ano) %>%
+  filter(UB != 2023) %>%
+  summarize(mediana_años_abierta = median(años_abierta, na.rm = TRUE))
+
+
+# gráfico de la evolución de la mediana de años
+grafico_mediana_años <- ggplot(mediana_años_por_ano, aes(x = ano, y = mediana_años_abierta)) +
+  geom_line(color = "lightblue", size = 1) +
+  geom_point(color = "red", size = 2) +
+  labs(title = "Evolución de la Mediana de Años que se Mantiene Abierta una Empresa",
+       x = "Año de Creación",
+       y = "Mediana de Años Abierta") +
+  theme_minimal()
+
+print(grafico_mediana_años)
+
+
+# Agrupar por año de creación y calcular la mediana de los años que una empresa se mantiene abierta
+estadisticas_empresas <- dc_1 %>%
+  group_by(ano) %>%
+  filter(UB != 2023) %>%
+  summarize(mediana_años_abierta = median(años_abierta, na.rm = TRUE),
+            promedio_años_abierta = mean(años_abierta, na.rm = TRUE),
+            sd_años_abierta = sd(años_abierta, na.rm = TRUE),
+            n = n())
+
+
+# Crear el gráfico de líneas
+grafico_mediana_años_abierta <- ggplot(estadisticas_empresas, aes(x = ano)) +
+  geom_line(aes(y = mediana_años_abierta, color = "Mediana"), size = 1) +
+  geom_point(aes(y = mediana_años_abierta, color = "Mediana"), size = 2) +
+  geom_line(aes(y = promedio_años_abierta, color = "Promedio"), size = 1, linetype = "dashed") +
+  geom_point(aes(y = promedio_años_abierta, color = "Promedio"), size = 2, shape = 21, fill = "white") +
+  labs(title = "Mediana y Promedio de Años que las Empresas se Mantienen Abiertas por Año de Creación",
+       x = "Año de Creación",
+       y = "Años que las Empresas se Mantienen Abiertas",
+       color = "Estadística") +
+  scale_color_manual(values = c("Mediana" = "blue", "Promedio" = "red")) +
+  theme_minimal()
+print(grafico_mediana_años_abierta)
+
+###################################################################################
+
+
+
+# Calcular los años que una empresa se mantiene abierta
+dc_1 <- dc_1 %>%
+  mutate(años_abierta = UB - ano)
+
+# Filtrar empresas con años_abierta positivos (las que tienen un último balance posterior a la fecha de creación)
+dc_1 <- dc_1 %>%
+  filter(años_abierta > 0)
+
+# Crear una columna con el año de cierre
+dc_1 <- dc_1 %>%
+  mutate(ano_cierre = ano + años_abierta)
+
+# Agrupar por año de cierre y año de creación para contar las empresas que cerraron
+empresas_cerradas_por_ano <- dc_1 %>%                                
+  group_by(ano_cierre, ano) %>%
+  summarize(empresas_cerradas = n())%>%
+  ungroup()
+
+#En este calculo podemos ver una agrupación de la cantidad de empresas que cerraron cada año,
+#para cada cohort de su año de creación (ej. La cantidad de empresas que fueron creadas en el
+#año 2000 y que cerraron en el año 2003 es 28)
+
+# Crear el gráfico de la evolución de las empresas cerradas por año de creación
+grafico_empresas_cerradas <- ggplot(empresas_cerradas_por_ano, aes(x = ano_cierre, y = empresas_cerradas, color = as.factor(ano))) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(title = "Cantidad de Empresas Cerradas por Año y Año de Creación",
+       x = "Año de Cierre",
+       y = "Cantidad de Empresas",
+       color = "Año de Creación") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+# Mostrar el gráfico
+print(grafico_empresas_cerradas)
+
+
+
+############################################################################
+# Filtrar y calcular años_abierta
+dc_1 <- dc_1 %>%
+  mutate(años_abierta = UB - ano)
+# Filtrar las empresas que se abrieron en los años específicos
+
+años_especificos <- c(2000, 2004, 2008, 2012, 2014, 2016, 2020, 2021)
+dc_1_filtrado <- dc_1 %>%
+  filter(ano %in% años_especificos)
+
+# Agrupar y contar la cantidad de empresas cerradas por año de cierre y año de creación, dejamos fuera 2023
+empresas_cerradas_2 <- dc_1_filtrado %>%
+  filter(UB != 2023) %>%
+  group_by(ano, UB) %>%
+  summarize(cantidad = n()) %>%
+  ungroup()
+
+# Crear el gráfico de líneas
+grafico_empresas_cerradas <- ggplot(empresas_cerradas, aes(x = UB, y = cantidad, color = factor(ano), group = factor(ano))) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  labs(title = "Cantidad de Empresas Cerradas por Año y Año de Creación",
+       x = "Año de Cierre",
+       y = "Cantidad de Empresas",
+       color = "Año de Creación") +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+# Mostrar el gráfico
+print(grafico_empresas_cerradas)
+
+
+
+
+
