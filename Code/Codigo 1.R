@@ -299,5 +299,145 @@ histograma_empresas <- ggplot(dc_1, aes(x = años_abierta)) +
   theme_minimal()
 
 print(histograma_empresas)
+######################################################################################
+
+#Gráfico de barras apiñadas del nuemro de empresas creadas y cerradas por año
+grafico_empresas_cerradas <- ggplot(empresas_cerradas_por_ano, aes(x = ano_cierre, y = empresas_cerradas, color = as.factor(ano))) +
+  geom_bar(stat = "identity", position = "stack") +
+  labs(title = "Cantidad de Empresas Cerradas Según Año de Creación",
+       x = "Año de Cierre",
+       y = "Cantidad de Empresas Cerradas",
+       fill = "Año de Creación") +
+  theme_minimal()
+print(grafico_empresas_cerradas)
+
+###################################################################################
+
+#Grafico del porcentaje de empresas que se crearon en 2020 y como fueron cerando en el tiempo
+
+# Filtrar datos para incluir solo las empresas creadas en 2020
+empresas_2020 <- dc_1 %>%
+  filter(ano == 2020)
+
+# Calcular el número total de empresas creadas en 2020
+total_empresas_2020 <- nrow(empresas_2020)
+
+# Calcular el número de empresas creadas en 2020 que cerraron en cada año
+cerradas_2021 <- nrow(empresas_2020 %>% filter(UB == 2021))
+cerradas_2022 <- nrow(empresas_2020 %>% filter(UB == 2022))
+cerradas_2023 <- nrow(empresas_2020 %>% filter(UB == 2023))
+
+# Calcular el porcentaje acumulativo de empresas cerradas para cada año
+porcentaje_2021 <- (cerradas_2021 / total_empresas_2020) * 100
+porcentaje_2022 <- ((cerradas_2021 + cerradas_2022) / total_empresas_2020) * 100
+porcentaje_2023 <- ((cerradas_2021 + cerradas_2022 + cerradas_2023) / total_empresas_2020) * 100
+
+# Crear un dataframe para el gráfico
+datos_grafico <- data.frame(
+  Año = c("2021", "2022", "2023"),
+  Porcentaje = c(porcentaje_2021, porcentaje_2022, porcentaje_2023)
+)
+
+# Crear el gráfico de barras acumulativo
+grafico_empresas_2020 <- ggplot(datos_grafico, aes(x = Año, y = Porcentaje, fill = Año)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  labs(title = "Porcentaje de empresas creadas en 2020 que cerraron en 2021, 2022, y 2023",
+       x = "Año de Cierre",
+       y = "Porcentaje de Empresas") +
+  theme_minimal() +
+  geom_text(aes(label = paste0(round(Porcentaje, 1), "%")), vjust = -0.5)
+
+# Mostrar el gráfico
+print(grafico_empresas_2020)
+  
+##########################################################################################
+
+#Grafico del porcentaje de empresas que se crearon en 2021 y como fueron cerando en el tiempo
+
+empresas_2021 <- dc_1 %>%
+  filter(ano == 2021)
+
+# Calcular el número total de empresas creadas en 2021
+total_empresas_2021 <- nrow(empresas_2021)
+
+# Calcular el número de empresas creadas en 2021 que cerraron en cada año
+cerradas_2022 <- nrow(empresas_2021 %>% filter(UB == 2022))
+cerradas_2023 <- nrow(empresas_2021 %>% filter(UB == 2023))
+
+# Calcular el porcentaje acumulativo de empresas cerradas para cada año
+porcentaje_2022 <- (cerradas_2022 / total_empresas_2021) * 100
+porcentaje_2023 <- ((cerradas_2022 + cerradas_2023) / total_empresas_2021) * 100
+
+# Crear un dataframe para el gráfico
+datos_grafico <- data.frame(
+  Año = c("2022", "2023"),
+  Porcentaje = c(porcentaje_2022, porcentaje_2023)
+)
+
+# Crear el gráfico de barras acumulativo
+grafico_empresas_2021 <- ggplot(datos_grafico, aes(x = Año, y = Porcentaje, fill = Año)) +
+  geom_bar(stat = "identity", width = 0.5) +
+  labs(title = "Porcentaje de empresas creadas en 2021 que cerraron en 2022 y 2023",
+       x = "Año de Cierre",
+       y = "Porcentaje de Empresas") +
+  theme_minimal() +
+  geom_text(aes(label = paste0(round(Porcentaje, 1), "%")), vjust = -0.5)
+
+# Mostrar el gráfico
+print(grafico_empresas_2021)
+
+######################################################################################
+
+#Grafico del porcentaje de empresas que se crearon en 2020 y 2021 y como fueron
+#cerando en el tiempo
+
+# Filtrar datos para incluir solo las empresas creadas en 2020 y 2021
+empresas_2020_2021 <- dc_1 %>%
+  filter(ano %in% c(2020, 2021))
+
+# Calcular el número total de empresas creadas en 2020 y 2021
+total_empresas_2020 <- nrow(empresas_2020_2021 %>% filter(ano == 2020))
+total_empresas_2021 <- nrow(empresas_2020_2021 %>% filter(ano == 2021))
+
+# Calcular el número de empresas creadas en 2020 que cerraron en cada año
+cerradas_2020_2021 <- nrow(empresas_2020_2021 %>% filter(ano == 2020 & UB == 2021))
+cerradas_2020_2022 <- nrow(empresas_2020_2021 %>% filter(ano == 2020 & UB == 2022))
+cerradas_2020_2023 <- nrow(empresas_2020_2021 %>% filter(ano == 2020 & UB == 2023))
+
+# Calcular el número de empresas creadas en 2021 que cerraron en cada año
+cerradas_2021_2022 <- nrow(empresas_2020_2021 %>% filter(ano == 2021 & UB == 2022))
+cerradas_2021_2023 <- nrow(empresas_2020_2021 %>% filter(ano == 2021 & UB == 2023))
+
+# Calcular el porcentaje acumulativo de empresas cerradas para cada año
+porcentaje_2020_2021 <- (cerradas_2020_2021 / total_empresas_2020) * 100
+porcentaje_2020_2022 <- ((cerradas_2020_2021 + cerradas_2020_2022) / total_empresas_2020) * 100
+porcentaje_2020_2023 <- ((cerradas_2020_2021 + cerradas_2020_2022 + cerradas_2020_2023) / total_empresas_2020) * 100
+
+porcentaje_2021_2022 <- (cerradas_2021_2022 / total_empresas_2021) * 100
+porcentaje_2021_2023 <- ((cerradas_2021_2022 + cerradas_2021_2023) / total_empresas_2021) * 100
+
+# Crear un dataframe para el gráfico
+datos_grafico <- data.frame(
+  Año = c("2021", "2022", "2023"),
+  `2020` = c(porcentaje_2020_2021, porcentaje_2020_2022, porcentaje_2020_2023),
+  `2021` = c(NA, porcentaje_2021_2022, porcentaje_2021_2023)
+)
+
+# Convertir datos_grafico a formato largo
+datos_grafico_largo <- datos_grafico %>%
+  pivot_longer(cols = -Año, names_to = "Año de Creación", values_to = "Porcentaje")
+
+# Crear el gráfico de barras acumulativo
+grafico_empresas_2020_2021 <- ggplot(datos_grafico_largo, aes(x = Año, y = Porcentaje, fill = `Año de Creación`)) +
+  geom_bar(stat = "identity", position = position_dodge(width = 0.5), width = 0.4) +
+  labs(title = "Porcentaje de empresas creadas en 2020 y 2021 que cerraron en 2021, 2022 y 2023",
+       x = "Año de Cierre",
+       y = "Porcentaje de Empresas") +
+  theme_minimal() +
+  geom_text(aes(label = ifelse(!is.na(Porcentaje), paste0(round(Porcentaje, 1), "%"), "")), 
+            position = position_dodge(width = 0.5), vjust = -0.5)
+
+# Mostrar el gráfico
+print(grafico_empresas_2020_2021)
 
 
